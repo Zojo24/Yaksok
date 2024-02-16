@@ -1,7 +1,5 @@
-import InfoBox from "./components/InfoBox/InfoBox";
-
 function App() {
-  return <><InfoBox /></>;
+  return <></>;
 }
 
 export default App;
