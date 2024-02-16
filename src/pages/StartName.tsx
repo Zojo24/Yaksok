@@ -10,11 +10,17 @@ const StartName = () => {
         <input
           type="text"
           placeholder="이름을 입력하세요"
-          className="border border-border p-2 rounded-[5px] shadow text-center focus:outline-none focus:shadow-none focus:border-orange-100"
+          className="border border-border p-2 rounded-[5px] shadow text-center focus:outline-none focus:border-stone-500"
           onChange={(e) => setName(e.target.value)}
           value={name}
         />
-        <input type="text" value={`이름: ${name}`} className="font-bold" />
+        <input
+          type="text"
+          value={`이름: ${name}`}
+          className="font-bold bg-white"
+          readOnly
+          disabled
+        />
         <Button variant="orange" size="lg" className="px-20" disabled={!name}>
           입장하기
         </Button>
