@@ -77,23 +77,30 @@ const Home = () => {
           </div>
         </nav>
         <header className="flex justify-end w-full m-4">
-          <div className="mr-8">
+          <div className="mr-8 flex flex-col">
             <input
               type="text"
               placeholder="Search"
-              className="w-[20rem] h-12 bg-darkGray border border-darkGray p-2 rounded-[5px] shadow text-center text-white focus:outline-none focus:border-creme"
+              className="w-[25rem] h-12 bg-darkGray border border-darkGray p-2 rounded-[5px] shadow text-center text-white focus:outline-none focus:border-creme"
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-          </div>
-          <div>
-            <ul>
-              {searchResults.map((result, index) => (
-                <li key={index}>
-                  {result.title} - {result.address}
-                </li>
-              ))}
-            </ul>
+
+            <div className="bg-white rounded-[5px]">
+              <ul>
+                {searchResults.map((result, index) => (
+                  <li key={index} className="bg-creme p-2 m-4 rounded-[5px]}">
+                    <p className="text-mdBold text-[0.87rem] text-center">
+                      {" "}
+                      {result.title.replace(/<[^>]*>?/gm, "")}
+                    </p>
+                    <p className="text-[0.8rem] text-center">
+                      {result.address}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
           <div className="h-12 bg-darkGray p-2 rounded-[5px] ">
             <Button variant="creme" size="sm" className="text-[0.9rem] mx-2">
