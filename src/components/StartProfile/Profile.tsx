@@ -1,10 +1,19 @@
-const Profile = () => {
+import { ProfileType } from "./ProfileType"
+
+// interface ProfileType {
+//   bgColor: string,
+//   id: string,
+//   name: string
+// }
+const Profile = ({ id, name, bgColor }: ProfileType) => {
+  const profileClass = `flex size-[90px] justify-center items-center rounded-[7px] bg-${bgColor}`;
 
   return (
-    <div className="flex size-[90px] justify-center items-center bg-border rounded-[7px]">
-      <p className="text-stone-500">name</p>
+    <div key={id} className={profileClass}>
+      <p className="text-creme font-bold">{name}</p>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
+
