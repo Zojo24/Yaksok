@@ -1,12 +1,37 @@
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import logo from "../assets/logo.png";
 import Button from "../components/Button";
-import { useState } from "react";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import NaverMap from "../components/NaverMap";
+import searchPlace from "../utils/api";
+
+interface SearchResultItem {
+  title: string;
+  link: string;
+  category: string;
+  description: string;
+  telephone: string;
+  address: string;
+  roadAddress: string;
+  mapx: string;
+  mapy: string;
+}
 
 const Home = () => {
-  const [name, setName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
+
+  const handleSearch = async () => {
+    if (!searchQuery) return; // 검색어가 비어있으면 요청을 보내지 않음
+    try {
+      const results = await searchPlace(searchQuery);
+      setSearchResults(results); // 검색 결과 상태 업데이트
+    } catch (error) {
+      console.error("검색 실패:", error);
+      setSearchResults([]); // 에러 발생 시 검색 결과를 비움
+    }
+  };
 
   return (
     <>
@@ -57,9 +82,18 @@ const Home = () => {
               type="text"
               placeholder="Search"
               className="w-[20rem] h-12 bg-darkGray border border-darkGray p-2 rounded-[5px] shadow text-center text-white focus:outline-none focus:border-creme"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
+          </div>
+          <div>
+            <ul>
+              {searchResults.map((result, index) => (
+                <li key={index}>
+                  {result.title} - {result.address}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="h-12 bg-darkGray p-2 rounded-[5px] ">
             <Button variant="creme" size="sm" className="text-[0.9rem] mx-2">
