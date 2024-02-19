@@ -7,7 +7,7 @@ type pinpointProps = {
 
 const Pinpoint = ({ order }: pinpointProps) => {
 	return (
-		<div className="relative w-[80px] h-[80px]">
+		<div className="relative w-20 h-20">
 			<FontAwesomeIcon className="w-full h-full text-[80px] text-orange" icon={faLocationPin} />
 			<span className="text-titleLg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{order}</span>
 		</div>
