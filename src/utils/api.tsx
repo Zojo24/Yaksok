@@ -2,14 +2,14 @@ import axios from "axios";
 import { Naver_ID, Naver_Secret } from "../config";
 
 const axiosInstance = axios.create({
-  baseURL: "https://openapi.naver.com",
+  baseURL: "/api",
   headers: {
     "X-Naver-Client-Id": Naver_ID,
     "X-Naver-Client-Secret": Naver_Secret,
   },
 });
 
-export const searchPlace = async (query) => {
+const searchPlace = async (query: string) => {
   try {
     const response = await axiosInstance.get("/v1/search/local.json", {
       params: { query, display: 20, start: 1, sort: "random" },
@@ -21,3 +21,4 @@ export const searchPlace = async (query) => {
     throw error;
   }
 };
+export default searchPlace;
