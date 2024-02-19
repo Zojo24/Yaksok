@@ -1,27 +1,33 @@
 import { useEffect, useRef } from "react";
 
-declare global {
-  interface Window {
-    naver: any;
-  }
+interface NaverMapProps {
+  center?: naver.maps.LatLng;
+  markerPosition?: naver.maps.LatLng;
 }
 
-const NaverMap = () => {
+const NaverMap = ({
+  center = new naver.maps.LatLng(37.5666805, 126.9784147),
+  markerPosition = new naver.maps.LatLng(37.5666805, 126.9784147),
+}: NaverMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const map = new window.naver.maps.Map(mapRef.current, {
-      center: new window.naver.maps.LatLng(37.3595704, 127.105399),
-      zoom: 10,
-    });
-    // 지도 위의 UI 요소 숨기기
-    map.setOptions("scaleControl", false);
-    map.setOptions("logoControl", false);
-    map.setOptions("mapDataControl", false);
-    map.setOptions("zoomControl", false);
-    map.setOptions("mapTypeControl", false);
-  }, []);
+    if (mapRef.current) {
+      const map = new naver.maps.Map(mapRef.current, {
+        center,
+        zoom: 16,
+      });
 
+      const markerOptions = {
+        position: markerPosition,
+        map: map,
+        icon: "..logo.png",
+      };
+
+      new naver.maps.Marker(markerOptions);
+      return () => map.destroy();
+    }
+  }, [center, markerPosition]);
   return <div ref={mapRef} className="flex absolute min-h-screen min-w-full" />;
 };
 
