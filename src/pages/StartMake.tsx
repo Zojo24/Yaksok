@@ -1,4 +1,4 @@
-import logo from "../assets/logo.png";
+import logo from "../assets/logo-b.png";
 import Button from "../components/Button";
 
 const StartMake = () => {
