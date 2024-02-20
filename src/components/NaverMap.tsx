@@ -2,32 +2,26 @@ import { useEffect, useRef } from "react";
 
 interface NaverMapProps {
   center?: naver.maps.LatLng;
-  markerPosition?: naver.maps.LatLng;
 }
 
-const NaverMap = ({
-  center = new naver.maps.LatLng(37.5666805, 126.9784147),
-  markerPosition = new naver.maps.LatLng(37.5666805, 126.9784147),
-}: NaverMapProps) => {
+const NaverMap = ({ center }: NaverMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const naverMapInstance = useRef<naver.maps.Map | null>(null);
 
   useEffect(() => {
-    if (mapRef.current) {
-      const map = new naver.maps.Map(mapRef.current, {
-        center,
+    if (mapRef.current && !naverMapInstance.current) {
+      naverMapInstance.current = new naver.maps.Map(mapRef.current, {
+        center: center,
         zoom: 16,
       });
-
-      const markerOptions = {
-        position: markerPosition,
-        map: map,
-        icon: "..logo.png",
-      };
-
-      new naver.maps.Marker(markerOptions);
-      return () => map.destroy();
     }
-  }, [center, markerPosition]);
+  }, []);
+
+  useEffect(() => {
+    if (naverMapInstance.current && center) {
+      naverMapInstance.current.setCenter(center);
+    }
+  }, [center]);
   return <div ref={mapRef} className="flex absolute min-h-screen min-w-full" />;
 };
 

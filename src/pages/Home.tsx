@@ -17,10 +17,20 @@ interface SearchResultItem {
   mapx: string;
   mapy: string;
 }
+interface LatLng {
+  lat: number;
+  lng: number;
+}
 
 const Home = () => {
+  const defaultCenter: LatLng = {
+    lat: 37.5663,
+    lng: 126.9779,
+  };
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
+  const [mapCenter, setMapCenter] = useState<LatLng>(defaultCenter);
 
   const handleSearch = async () => {
     if (!searchQuery) return; // 검색어가 비어있으면 요청을 보내지 않음
@@ -33,10 +43,18 @@ const Home = () => {
     }
   };
 
+  const handleLocationClick = (mapx: string, mapy: string) => {
+    // 지도 중심을 업데이트하는 함수
+    setMapCenter({
+      lat: parseFloat(mapy),
+      lng: parseFloat(mapx),
+    });
+  };
+
   return (
     <>
       <div className="flex absolute min-h-screen min-w-full">
-        <NaverMap />
+        <NaverMap center={mapCenter} />
       </div>
       <div className="flex relative z-5">
         <nav className="bg-darkGray w-24 h-screen items-center pb-2 flex flex-col justify-between">
@@ -89,7 +107,13 @@ const Home = () => {
             <div className="bg-white rounded-[5px]">
               <ul>
                 {searchResults.map((result, index) => (
-                  <li key={index} className="bg-creme p-2 m-4 rounded-[5px]}">
+                  <li
+                    key={index}
+                    className="bg-creme p-2 m-4 rounded-[5px]}"
+                    onClick={() =>
+                      handleLocationClick(result.mapx, result.mapy)
+                    }
+                  >
                     <p className="text-mdBold text-[0.87rem] text-center">
                       {" "}
                       {result.title.replace(/<[^>]*>?/gm, "")}
