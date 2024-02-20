@@ -17,11 +17,16 @@ const StartName = () => {
         <input
           type="text"
           value={`이름: ${name}`}
-          className="font-bold bg-white"
+          className="bg-white"
           readOnly
           disabled
         />
-        <Button variant="orange" size="lg" className="px-20" disabled={!name}>
+        <Button
+          variant="orange"
+          size="lg"
+          className="px-20 text-white"
+          disabled={!name}
+        >
           입장하기
         </Button>
       </div>
