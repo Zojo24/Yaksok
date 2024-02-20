@@ -25,7 +25,7 @@ const NewMemo = ({onAddMemo}: NewMemoProps) => {
     type="text" 
     placeholder="Add memo" 
     ref={memo} 
-    maxLength={18}/>
+    maxLength={16}/>
   </form>
   )
 }
