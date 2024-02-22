@@ -9,12 +9,7 @@ import MockProfiles from "../mocks/MockProfiles";
 
 interface SearchResultItem {
   title: string;
-  link: string;
-  category: string;
-  description: string;
-  telephone: string;
   address: string;
-  roadAddress: string;
   location: LatLng;
 }
 interface LatLng {
