@@ -1,7 +1,11 @@
 import { useEffect, useRef } from "react";
 
 interface NaverMapProps {
-  center?: naver.maps.LatLng;
+  center?: LatLng;
+}
+interface LatLng {
+  lat: number;
+  lng: number;
 }
 
 const NaverMap = ({ center }: NaverMapProps) => {

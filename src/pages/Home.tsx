@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import logo from "../assets/logo-w.png";
 import Button from "../components/Button";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
 import NaverMap from "../components/NaverMap";
 import searchPlace from "../utils/api";
 import MockProfiles from "../mocks/MockProfiles";
+import Hamburger from "../components/Hamburger/Hamburger";
 
 interface SearchResultItem {
   title: string;
@@ -63,13 +62,7 @@ const Home = () => {
           <nav className="bg-darkGray w-24 h-screen items-center pb-2 flex flex-col justify-between">
             <div className="flex flex-col w-full items-center">
               <img src={logo} alt="logo" className="w-16 h-13 m-2" />
-              <FontAwesomeIcon
-                icon={faBars}
-                size="2xl"
-                style={{ color: "#ffffff" }}
-                className="my-4 cursor-pointer"
-                onClick={handleUserList}
-              />
+              <Hamburger onClick={handleUserList} />
               <Button variant="creme" size="md" className="w-14 h-14 mt-2">
                 유성
               </Button>
