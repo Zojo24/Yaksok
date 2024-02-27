@@ -1,7 +1,14 @@
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo-b.png";
 import Button from "../components/Button";
 
 const StartMake = () => {
+	const navigate = useNavigate();
+
+	const handelPageChange = () => {
+		navigate("/form");
+	};
+
 	return (
 		<div className="h-lvh flex justify-center items-center">
 			<div className="flex flex-col justify-center items-center gap-10 bg-white rounded-[10px] px-32 py-12">
@@ -9,7 +16,7 @@ const StartMake = () => {
 					<img src={logo} alt="logo" />
 				</h1>
 				<p>약속(YAKSOK)에 오신 걸 환영합니다.</p>
-				<Button variant="orange" size="lg" className="w-full text-white">
+				<Button onClick={handelPageChange} variant="orange" size="lg" className="w-full text-white">
 					새로 생성하기
 				</Button>
 			</div>
