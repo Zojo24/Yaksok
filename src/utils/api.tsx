@@ -21,4 +21,35 @@ const searchPlace = async (query: string) => {
     throw error;
   }
 };
-export default searchPlace;
+export { searchPlace };
+
+
+const savePlace = async (
+  title: string,
+  link: string,
+  rating: number,
+  address: string,
+  lat: number,
+  lng: number
+) => {
+  try {
+    const postData = {
+      title,
+      link,
+      rating,
+      address,
+      lat,
+      lng,
+    };
+
+    const response = await axiosInstance.post("/save-location", postData);
+    console.log("서버 저장 결과:", response.data);
+
+    // 필요한 경우 서버 응답에 따라 추가 작업을 수행합니다.
+  } catch (error) {
+    console.error("장소 정보 저장 실패:", error);
+  }
+};
+export { savePlace };
+
+const 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import logo from "../assets/logo-w.png";
 import Button from "../components/Button";
 import NaverMap from "../components/NaverMap";
-import searchPlace from "../utils/api";
+import { savePlace, searchPlace } from "../utils/api";
 import MockProfiles from "../mocks/MockProfiles";
 import Hamburger from "../components/Hamburger/Hamburger";
 
@@ -11,6 +11,8 @@ interface SearchResultItem {
   address: string;
   lat: number;
   lng: number;
+  link: string;
+  rating: number;
 }
 interface LatLng {
   lat: number;
@@ -62,16 +64,23 @@ const Home = () => {
   };
 
   // 지도 중심과 핀포인트를 업데이트하는 함수
-  const handleLocationClick = async (location: LatLng) => {
-    setMapCenter(location);
-    setSelectedLocations([location]);
+  const handleLocationClick = async (result: SearchResultItem) => {
+    setMapCenter({ lat: result.lat, lng: result.lng });
+    setSelectedLocations([{ lat: result.lat, lng: result.lng }]);
+    setSearchResults([result]);
+
     try {
-      const query = `${location.lat},${location.lng}`;
-      const results = await searchPlace(query);
-      console.log(results);
-      setSearchResults(results);
+      await savePlace(
+        result.title.replace(/<[^>]*>?/gm, ""), // HTML 태그 제거
+        result.link,
+        result.rating || 0, // rating이 없는 경우 0으로 처리
+        result.address,
+        result.lat,
+        result.lng
+      );
+      console.log("장소 저장 성공");
     } catch (error) {
-      console.error("Failed to fetch additional information:", error);
+      console.error("Failed to save place:", error);
     }
   };
 
@@ -149,12 +158,7 @@ const Home = () => {
                   <li
                     key={index}
                     className="bg-creme p-2 m-4 rounded-[5px] cursor-pointer "
-                    onClick={() =>
-                      handleLocationClick({
-                        lat: result.lat,
-                        lng: result.lng,
-                      })
-                    }
+                    onClick={() => handleLocationClick(result)}
                   >
                     <p className="text-mdBold text-[0.87rem] text-center">
                       {result.title.replace(/<[^>]*>?/gm, "")}
