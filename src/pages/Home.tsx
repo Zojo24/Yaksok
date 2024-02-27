@@ -9,7 +9,8 @@ import Hamburger from "../components/Hamburger/Hamburger";
 interface SearchResultItem {
   title: string;
   address: string;
-  location: LatLng;
+  lat: number;
+  lng: number;
 }
 interface LatLng {
   lat: number;
@@ -17,10 +18,11 @@ interface LatLng {
 }
 
 interface User {
-  name: "string";
-  bgColor: "string";
+  name: string;
+  bgColor: string;
 }
 
+//임시로 시청역을 기준으로 잡았습니다. 추후 변경 예정
 const Home = () => {
   const defaultCenter: LatLng = {
     lat: 37.5663,
@@ -31,26 +33,47 @@ const Home = () => {
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [mapCenter, setMapCenter] = useState<LatLng>(defaultCenter);
   const [isUserListVisible, setIsUserListVisible] = useState(false);
-  const mapMarkers = [
-    { lat: 37.561, lng: 126.985 },
-    { lat: 37.5663, lng: 126.9779 },
-  ];
+
+  //임시로 시청역과 명동역을 핀포인트 기준으로 잡았습니다. 추후 삭제 예정
+  // const mapMarkers = [
+  //   { lat: 37.561, lng: 126.985 },
+  //   { lat: 37.5663, lng: 126.9779 },
+  // ];
+  const [selectedLocations, setSelectedLocations] = useState<LatLng[]>([]);
 
   const handleSearch = async () => {
     if (!searchQuery) return; // 검색어가 비어있으면 요청을 보내지 않음
     try {
       const results = await searchPlace(searchQuery);
       console.log(results);
-      setSearchResults(results); // 검색 결과 상태 업데이트
+      const convertedResults = results.map(
+        (result: { mapy: number; mapx: number }) => ({
+          ...result,
+          lat: result.mapy, // 'mapy' 값을 'lat'로 변환
+          lng: result.mapx, // 'mapx' 값을 'lng'로 변환
+        })
+      );
+
+      setSearchResults(convertedResults);
     } catch (error) {
       console.error("검색 실패:", error);
       setSearchResults([]); // 에러 발생 시 검색 결과를 비움
     }
   };
 
-  const handleLocationClick = (location: LatLng) => {
+  // 지도 중심과 핀포인트를 업데이트하는 함수
+  const handleLocationClick = async (location: LatLng) => {
     setMapCenter(location);
-  }; // 지도 중심을 업데이트하는 함수
+    setSelectedLocations([location]);
+    try {
+      const query = `${location.lat},${location.lng}`;
+      const results = await searchPlace(query);
+      console.log(results);
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Failed to fetch additional information:", error);
+    }
+  };
 
   const handleUserList = () => {
     setIsUserListVisible(!isUserListVisible);
@@ -59,7 +82,7 @@ const Home = () => {
   return (
     <>
       <div className="flex absolute min-h-screen min-w-full">
-        <NaverMap center={mapCenter} markers={mapMarkers} />
+        <NaverMap center={mapCenter} markers={selectedLocations} />
       </div>
       <div className="flex relative z-5">
         <div className="flex">
@@ -100,6 +123,7 @@ const Home = () => {
           >
             {MockProfiles.map((user) => (
               <Button
+                key={user.id}
                 variant="creme"
                 size="md"
                 className={`w-14 h-14 bg-${user.bgColor}`}
@@ -124,11 +148,15 @@ const Home = () => {
                 {searchResults.map((result, index) => (
                   <li
                     key={index}
-                    className="bg-creme p-2 m-4 rounded-[5px]}"
-                    onClick={() => handleLocationClick(result.location)}
+                    className="bg-creme p-2 m-4 rounded-[5px] cursor-pointer "
+                    onClick={() =>
+                      handleLocationClick({
+                        lat: result.lat,
+                        lng: result.lng,
+                      })
+                    }
                   >
                     <p className="text-mdBold text-[0.87rem] text-center">
-                      {" "}
                       {result.title.replace(/<[^>]*>?/gm, "")}
                     </p>
                     <p className="text-[0.8rem] text-center">
