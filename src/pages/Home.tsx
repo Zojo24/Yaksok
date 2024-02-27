@@ -31,6 +31,10 @@ const Home = () => {
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [mapCenter, setMapCenter] = useState<LatLng>(defaultCenter);
   const [isUserListVisible, setIsUserListVisible] = useState(false);
+  const mapMarkers = [
+    { lat: 37.561, lng: 126.985 },
+    { lat: 37.5663, lng: 126.9779 },
+  ];
 
   const handleSearch = async () => {
     if (!searchQuery) return; // 검색어가 비어있으면 요청을 보내지 않음
@@ -55,7 +59,7 @@ const Home = () => {
   return (
     <>
       <div className="flex absolute min-h-screen min-w-full">
-        <NaverMap center={mapCenter} />
+        <NaverMap center={mapCenter} markers={mapMarkers} />
       </div>
       <div className="flex relative z-5">
         <div className="flex">
