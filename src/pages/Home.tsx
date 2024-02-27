@@ -2,14 +2,17 @@ import { useState } from "react";
 import logo from "../assets/logo-w.png";
 import Button from "../components/Button";
 import NaverMap from "../components/NaverMap";
-import searchPlace from "../utils/api";
+import { fetchPlaceInfo, savePlace, searchPlace } from "../utils/api";
 import MockProfiles from "../mocks/MockProfiles";
 import Hamburger from "../components/Hamburger/Hamburger";
 
 interface SearchResultItem {
   title: string;
   address: string;
-  location: LatLng;
+  lat: number;
+  lng: number;
+  link: string;
+  rating: number;
 }
 interface LatLng {
   lat: number;
@@ -17,10 +20,11 @@ interface LatLng {
 }
 
 interface User {
-  name: "string";
-  bgColor: "string";
+  name: string;
+  bgColor: string;
 }
 
+//임시로 시청역을 기준으로 잡음 (추후 변경 예정)
 const Home = () => {
   const defaultCenter: LatLng = {
     lat: 37.5663,
@@ -32,21 +36,63 @@ const Home = () => {
   const [mapCenter, setMapCenter] = useState<LatLng>(defaultCenter);
   const [isUserListVisible, setIsUserListVisible] = useState(false);
 
+  const [selectedLocations, setSelectedLocations] = useState<LatLng[]>([]);
+
   const handleSearch = async () => {
     if (!searchQuery) return; // 검색어가 비어있으면 요청을 보내지 않음
     try {
       const results = await searchPlace(searchQuery);
       console.log(results);
-      setSearchResults(results); // 검색 결과 상태 업데이트
+      const convertedResults = results.map(
+        (result: { mapy: number; mapx: number }) => ({
+          ...result,
+          lat: result.mapy, // 'mapy' 값을 'lat'로 변환
+          lng: result.mapx, // 'mapx' 값을 'lng'로 변환
+        })
+      );
+
+      setSearchResults(convertedResults);
     } catch (error) {
       console.error("검색 실패:", error);
       setSearchResults([]); // 에러 발생 시 검색 결과를 비움
     }
   };
 
-  const handleLocationClick = (location: LatLng) => {
-    setMapCenter(location);
-  }; // 지도 중심을 업데이트하는 함수
+  // 지도 중심과 핀포인트를 업데이트하는 함수
+  const handleLocationClick = async (result: SearchResultItem) => {
+    setMapCenter({ lat: result.lat, lng: result.lng });
+    setSelectedLocations([{ lat: result.lat, lng: result.lng }]);
+    setSearchResults([result]);
+
+    try {
+      await savePlace(
+        result.title.replace(/<[^>]*>?/gm, ""), // HTML 태그 제거
+        result.link,
+        result.rating || 0, // rating이 없는 경우 0으로 처리
+        result.address,
+        result.lat,
+        result.lng
+      );
+      console.log("장소 저장 성공");
+
+      // 장소 저장 성공 후, 추가 정보를 불러오기 (실제 구조에 맞춰 조정 필요)
+      const placeInfo = {
+        title: result.title.replace(/<[^>]*>?/gm, ""),
+        link: result.link,
+        rating: result.rating || 0,
+        address: result.address,
+        point: { x: result.lat, y: result.lng },
+        distance: 0,
+        vote: [],
+        memos: [],
+      };
+
+      await fetchPlaceInfo(placeInfo);
+      console.log("가게 추가 정보 불러오기 성공");
+    } catch (error) {
+      console.error("Failed to save place:", error);
+    }
+  };
 
   const handleUserList = () => {
     setIsUserListVisible(!isUserListVisible);
@@ -55,7 +101,7 @@ const Home = () => {
   return (
     <>
       <div className="flex absolute min-h-screen min-w-full">
-        <NaverMap center={mapCenter} />
+        <NaverMap center={mapCenter} markers={selectedLocations} />
       </div>
       <div className="flex relative z-5">
         <div className="flex">
@@ -96,6 +142,7 @@ const Home = () => {
           >
             {MockProfiles.map((user) => (
               <Button
+                key={user.id}
                 variant="creme"
                 size="md"
                 className={`w-14 h-14 bg-${user.bgColor}`}
@@ -120,11 +167,10 @@ const Home = () => {
                 {searchResults.map((result, index) => (
                   <li
                     key={index}
-                    className="bg-creme p-2 m-4 rounded-[5px]}"
-                    onClick={() => handleLocationClick(result.location)}
+                    className="bg-creme p-2 m-4 rounded-[5px] cursor-pointer "
+                    onClick={() => handleLocationClick(result)}
                   >
                     <p className="text-mdBold text-[0.87rem] text-center">
-                      {" "}
                       {result.title.replace(/<[^>]*>?/gm, "")}
                     </p>
                     <p className="text-[0.8rem] text-center">

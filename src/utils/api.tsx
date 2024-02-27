@@ -9,6 +9,17 @@ const axiosInstance = axios.create({
   },
 });
 
+interface PlaceInfo {
+  title: string;
+  link: string;
+  rating: number;
+  address: string;
+  point: { x: number; y: number };
+  distance: number;
+  vote: string[];
+  memos: { memoId: number; context: string }[];
+}
+
 const searchPlace = async (query: string) => {
   try {
     const response = await axiosInstance.get("/v1/search/local.json", {
@@ -21,4 +32,45 @@ const searchPlace = async (query: string) => {
     throw error;
   }
 };
-export default searchPlace;
+
+const savePlace = async (
+  title: string,
+  link: string,
+  rating: number,
+  address: string,
+  lat: number,
+  lng: number
+) => {
+  try {
+    const postData = {
+      title,
+      link,
+      rating,
+      address,
+      lat,
+      lng,
+    };
+
+    const response = await axiosInstance.post("/save-location", postData);
+    console.log("서버 저장 결과:", response.data);
+
+    // 필요한 경우 서버 응답에 따라 추가 작업을 수행합니다.
+  } catch (error) {
+    console.error("장소 정보 저장 실패:", error);
+  }
+};
+
+const fetchPlaceInfo = async (placeInfo: PlaceInfo) => {
+  try {
+    const { title, link, rating, address, point, distance, vote, memos } =
+      placeInfo;
+    const response = await axiosInstance.get("/fetch-place-info", {
+      params: { title, link, rating, address, point, distance, vote, memos },
+    });
+    console.log("가게 추가 정보:", response.data);
+  } catch (error) {
+    console.error("가게 정보 불러오기 실패:", error);
+  }
+};
+
+export { searchPlace, savePlace, fetchPlaceInfo };
