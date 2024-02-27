@@ -2,7 +2,7 @@ import { useState } from "react";
 import logo from "../assets/logo-w.png";
 import Button from "../components/Button";
 import NaverMap from "../components/NaverMap";
-import { savePlace, searchPlace } from "../utils/api";
+import { fetchPlaceInfo, savePlace, searchPlace } from "../utils/api";
 import MockProfiles from "../mocks/MockProfiles";
 import Hamburger from "../components/Hamburger/Hamburger";
 
@@ -24,7 +24,7 @@ interface User {
   bgColor: string;
 }
 
-//임시로 시청역을 기준으로 잡았습니다. 추후 변경 예정
+//임시로 시청역을 기준으로 잡음 (추후 변경 예정)
 const Home = () => {
   const defaultCenter: LatLng = {
     lat: 37.5663,
@@ -36,11 +36,6 @@ const Home = () => {
   const [mapCenter, setMapCenter] = useState<LatLng>(defaultCenter);
   const [isUserListVisible, setIsUserListVisible] = useState(false);
 
-  //임시로 시청역과 명동역을 핀포인트 기준으로 잡았습니다. 추후 삭제 예정
-  // const mapMarkers = [
-  //   { lat: 37.561, lng: 126.985 },
-  //   { lat: 37.5663, lng: 126.9779 },
-  // ];
   const [selectedLocations, setSelectedLocations] = useState<LatLng[]>([]);
 
   const handleSearch = async () => {
@@ -79,6 +74,21 @@ const Home = () => {
         result.lng
       );
       console.log("장소 저장 성공");
+
+      // 장소 저장 성공 후, 추가 정보를 불러오기 (실제 구조에 맞춰 조정 필요)
+      const placeInfo = {
+        title: result.title.replace(/<[^>]*>?/gm, ""),
+        link: result.link,
+        rating: result.rating || 0,
+        address: result.address,
+        point: { x: result.lat, y: result.lng },
+        distance: 0,
+        vote: [],
+        memos: [],
+      };
+
+      await fetchPlaceInfo(placeInfo);
+      console.log("가게 추가 정보 불러오기 성공");
     } catch (error) {
       console.error("Failed to save place:", error);
     }
