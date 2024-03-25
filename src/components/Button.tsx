@@ -1,6 +1,6 @@
 import React, { ForwardedRef, forwardRef, ButtonHTMLAttributes } from "react";
 
-type ButtonVariant = "orange" | "creme";
+type ButtonVariant = "orange" | "creme" | "white" | "gray";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -28,6 +28,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const variantClasses = {
       orange: "bg-orange text-orange-foreground shadow hover:bg-orange/90",
       creme: "bg-creme text-creme-foreground shadow hover:bg-orange",
+      white: "bg-white shadow hover:bg-orange",
+      gray: "bg-stone-600 text-white shadow hover:bg-orange",
     }[variant];
 
     const sizeClasses =

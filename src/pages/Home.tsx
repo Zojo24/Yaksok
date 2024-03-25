@@ -6,6 +6,10 @@ import { fetchPlaceInfo, savePlace, searchPlace } from "../utils/api";
 import MockProfiles from "../mocks/MockProfiles";
 import HamburgerMenu from "../components/HamburgerMenu";
 import { LatLng, SearchResultItem } from "../types/\btypes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import Cart from "../components/Cart";
+import { useCartStore } from "../store/cartStore";
 
 //임시로 시청역을 기준으로 잡음 (추후 변경 예정)
 const Home = () => {
@@ -20,6 +24,10 @@ const Home = () => {
   const [isUserListVisible, setIsUserListVisible] = useState(false);
 
   const [selectedLocations, setSelectedLocations] = useState<LatLng[]>([]);
+
+  const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
+  const cartItems = useCartStore((state) => state.cartItems);
+  const addProductToCart = useCartStore((state) => state.addToCart);
 
   const handleSearch = async () => {
     if (!searchQuery) return; // 검색어가 비어있으면 요청을 보내지 않음
@@ -81,6 +89,16 @@ const Home = () => {
     setIsUserListVisible(!isUserListVisible);
   };
 
+  const toggleCartDropdown = () => {
+    setIsCartDropdownOpen(!isCartDropdownOpen);
+  };
+
+  const handleAddClear = (item: SearchResultItem) => {
+    addProductToCart(item);
+    // setSearchResults([]);
+    // setIsUserListVisible(false);
+  };
+
   return (
     <>
       <div className="flex absolute min-h-screen min-w-full">
@@ -95,6 +113,27 @@ const Home = () => {
               <Button variant="creme" size="md" className="w-14 h-14 mt-2">
                 유성
               </Button>
+              <Button
+                variant="creme"
+                size="md"
+                className="w-14 h-14 text-[0.85rem] text-bold my-3"
+                onClick={toggleCartDropdown}
+              >
+                <FontAwesomeIcon icon={faShoppingCart} />
+              </Button>
+              {isCartDropdownOpen && (
+                <div className="absolute left-24 top-44 p-5 mt-2 ml-1 flex flex-col bg-white shadow-lg rounded-lg">
+                  <Cart cartItems={cartItems} />
+                  <Button
+                    variant="gray"
+                    size="sm"
+                    onClick={toggleCartDropdown}
+                    className="cursor-pointer"
+                  >
+                    닫기
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="flex flex-col w-full items-center pb-5">
               <Button
@@ -150,15 +189,23 @@ const Home = () => {
                 {searchResults.map((result, index) => (
                   <li
                     key={index}
-                    className="bg-creme p-2 m-4 rounded-[5px] cursor-pointer "
+                    className="bg-creme p-2 m-4 rounded-[5px] flex flex-col items-right cursor-pointer "
                     onClick={() => handleLocationClick(result)}
                   >
                     <p className="text-mdBold text-[0.87rem] text-center">
                       {result.title.replace(/<[^>]*>?/gm, "")}
                     </p>
-                    <p className="text-[0.8rem] text-center">
+                    <p className="text-[0.8rem] text-center mb-2">
                       {result.address}
                     </p>
+                    <Button
+                      variant="white"
+                      size="md"
+                      className="text-[0.85rem] justify-center items-center text-bold"
+                      onClick={() => handleAddClear(result)}
+                    >
+                      장바구니에 추가
+                    </Button>
                   </li>
                 ))}
               </ul>

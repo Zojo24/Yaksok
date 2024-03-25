@@ -1,4 +1,5 @@
 export interface SearchResultItem {
+  id: string;
   title: string;
   address: string;
   lat: number;
@@ -28,7 +29,13 @@ export interface PlaceInfo {
 }
 
 export interface CartItem {
-  id: string;
-  name: string;
-  quantity: number;
+  id: number;
+  title: string;
+  address: string;
+}
+
+export interface CartModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
 }
