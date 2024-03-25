@@ -1,30 +1,29 @@
-# React + TypeScript + Vite
+# Yaksok
+## 프로젝트 소개
+'Yaksok'은 사용자들이 모임 장소를 쉽게 결정할 수 있도록 지원하는 웹 서비스입니다. 이 프로젝트는 제 개인적인 경험에서 비롯되어, 다수의 인원이 약속 장소를 정하는 과정에서의 어려움을 해소하고자 합니다. 현재 3명의 React 기반 프론트엔드 개발자와 2명의 백엔드 개발자가 협력하여 개발 중입니다. 목표는 사용자 경험을 간소화하고, 약속 장소 선정의 번거로움을 줄이는 것입니다.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 제작 기간
+2024년 02월부터 현재 진행 중
 
-Currently, two official plugins are available:
+## 사용 기술
+React, TypeScript, Zustand, Axios, Tailwind
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 기능 구현
+'Yaksok' 웹 서비스는 다음과 같은 핵심 기능을 제공하고자 합니다.
 
-## Expanding the ESLint configuration
+- 지도 기반 사용자 인터페이스: 사용자와 모임 참여자들이 추천 장소를 지도 상에서 쉽게 확인하고 탐색할 수 있습니다.
+- 장소 검색 및 필터링: 다양한 필터를 적용하여 사용자가 원하는 조건의 장소를 쉽게 찾을 수 있습니다.
+- 장소에 대한 투표 시스템: 모임 참여자들이 선호하는 장소에 투표할 수 있는 기능을 제공하여, 결정 과정을 간소화합니다.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+이 기능들은 사용자가 약속 장소를 쉽게 결정하고 모임을 효율적으로 조직할 수 있도록 설계되었습니다.
 
-- Configure the top-level `parserOptions` property like this:
+## 에러 핸들링
+본 프로젝트를 통해 CORS 에러에 대응하는 중요한 학습 경험을 했습니다. CORS 에러는 다른 출처에서 데이터를 요청할 때 보안 상의 이유로 발생하는 문제입니다. 개발 과정에서 이 문제를 해결하기 위해 다음과 같은 접근 방식을 채택했습니다:
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+- 개발 서버 구성 변경: 개발 서버 설정을 조정하여, 요청이 동일 출처에서 발생한 것으로 간주되도록 했습니다.
+- 리버스 프록시 설정: 개발 단계에서 외부 API를 호출할 때 리버스 프록시를 활용하여 CORS 문제를 우회했습니다.
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+이러한 접근 방식을 통해, 개발 환경에서의 CORS 에러를 성공적으로 해결할 수 있었습니다.
+
+## 프로젝트를 통해 배운점 
+이 프로젝트를 진행하면서, 기술적 문제 해결 뿐만 아니라 팀 내 커뮤니케이션의 중요성을 깨닫게 되었습니다. 특히, 초기 단계에서 발생한 소통 문제를 해결하기 위해 기능 명세서와 API 명세서를 작성하고 정기적인 미팅을 도입하여 서로의 이해를 돕고 개발 방향을 조율할 수 있게 되었습니다. 이러한 변경을 통해, 프로젝트는 보다 원활하게 진행되었으며 팀원 간의 협업이 강화되었습니다.
