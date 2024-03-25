@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Naver_ID, Naver_Secret } from "../config";
+import { PlaceInfo } from "../types/\btypes";
 
 const axiosInstance = axios.create({
   baseURL: "/api",
@@ -8,17 +9,6 @@ const axiosInstance = axios.create({
     "X-Naver-Client-Secret": Naver_Secret,
   },
 });
-
-interface PlaceInfo {
-  title: string;
-  link: string;
-  rating: number;
-  address: string;
-  point: { x: number; y: number };
-  distance: number;
-  vote: string[];
-  memos: { memoId: number; context: string }[];
-}
 
 const searchPlace = async (query: string) => {
   try {

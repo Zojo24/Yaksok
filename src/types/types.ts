@@ -15,3 +15,20 @@ export interface User {
   name: string;
   bgColor: string;
 }
+
+export interface PlaceInfo {
+  title: string;
+  link: string;
+  rating: number;
+  address: string;
+  point: { x: number; y: number };
+  distance: number;
+  vote: string[];
+  memos: { memoId: number; context: string }[];
+}
+
+export interface CartItem {
+  id: string;
+  name: string;
+  quantity: number;
+}
