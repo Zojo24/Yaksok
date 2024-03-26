@@ -7,7 +7,7 @@ import MockProfiles from "../mocks/MockProfiles";
 import HamburgerMenu from "../components/HamburgerMenu";
 import { CartItem, LatLng, SearchResultItem } from "../types/\btypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Cart from "../components/Cart";
 import { useCartStore } from "../store/cartStore";
 
@@ -148,14 +148,12 @@ const Home = () => {
                     onSelectItem={handleSelectCartItem}
                     onAddMap={addSelectedItemsToMap}
                   />
-                  <Button
-                    variant="gray"
-                    size="sm"
-                    onClick={toggleCartDropdown}
-                    className="cursor-pointer "
+                  <button
+                    className="absolute top-0 right-0 m-3"
+                    onClick={() => setIsCartDropdownOpen(false)}
                   >
-                    닫기
-                  </Button>
+                    <FontAwesomeIcon icon={faXmark} />
+                  </button>
                 </div>
               )}
             </div>

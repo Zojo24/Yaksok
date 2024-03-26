@@ -36,7 +36,7 @@ const Cart = ({ cartItems, onAddMap, onSelectItem, children }: CartProps) => {
         variant="gray"
         size="sm"
         onClick={onAddMap}
-        className="cursor-pointer flex justify-center mb-2"
+        className="cursor-pointer flex w-full justify-center mb-2"
       >
         지도에 등록
       </Button>
