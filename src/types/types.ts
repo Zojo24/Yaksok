@@ -29,7 +29,7 @@ export interface PlaceInfo {
 }
 
 export interface CartItem {
-  id: number;
+  id: string;
   title: string;
   address: string;
   lat: number;
@@ -40,4 +40,11 @@ export interface CartModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+}
+
+export interface CartState {
+  cartItems: CartItem[];
+  addToCart: (item: CartItem) => void;
+  removeFromCart: (id: number) => void;
+  clearCart: () => void;
 }

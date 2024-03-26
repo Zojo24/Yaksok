@@ -1,27 +1,19 @@
 import { create } from "zustand";
-import { CartItem } from "../types/\btypes";
+import { persist, devtools } from "zustand/middleware";
+import { CartState, CartItem } from "../types/\btypes";
 
-interface CartState {
-  cartItems: CartItem[];
-  addToCart: (newItem: Omit<CartItem, "id">) => void;
-}
-
-export const useCartStore = create<CartState>((set) => ({
+let cartStore = (set): CartState => ({
   cartItems: [],
-  addToCart: (newItem) =>
-    set((state) => {
-      const newId =
-        state.cartItems.reduce((maxId, item) => Math.max(maxId, item.id), 0) +
-        1;
-      const newItemWithId = { ...newItem, id: newId };
+  addToCart: (item: CartItem) =>
+    set((state) => ({ cartItems: [...state.cartItems, item] })),
+  removeFromCart: (id: number) =>
+    set((state) => ({
+      cartItems: state.cartItems.filter((item) => item.id !== id),
+    })),
+  clearCart: () => set({ cartItems: [] }),
+});
 
-      const isItemInCart = state.cartItems.some(
-        (item) => item.id === newItemWithId.id
-      );
-      if (!isItemInCart) {
-        return { cartItems: [...state.cartItems, newItemWithId] };
-      }
+cartStore = devtools(cartStore);
+cartStore = persist(cartStore, { name: "cart" });
 
-      return state;
-    }),
-}));
+export const useCartStore = create<CartState>()(cartStore);

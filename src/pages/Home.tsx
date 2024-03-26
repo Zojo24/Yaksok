@@ -13,21 +13,15 @@ import { useCartStore } from "../store/cartStore";
 
 //임시로 시청역을 기준으로 잡음 (추후 변경 예정)
 const Home = () => {
-  const defaultCenter: LatLng = {
-    lat: 37.5663,
-    lng: 126.9779,
-  };
+  const { cartItems, addToCart } = useCartStore();
+  const defaultCenter: LatLng = { lat: 37.5663, lng: 126.9779 };
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [mapCenter, setMapCenter] = useState<LatLng>(defaultCenter);
   const [isUserListVisible, setIsUserListVisible] = useState(false);
-
   const [selectedLocations, setSelectedLocations] = useState<LatLng[]>([]);
-
   const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
-  const cartItems = useCartStore((state) => state.cartItems);
-  const addProductToCart = useCartStore((state) => state.addToCart);
   const [selectedCartItems, setSelectedCartItems] = useState<CartItem[]>([]);
 
   const handleSearch = async () => {
@@ -95,9 +89,14 @@ const Home = () => {
   };
 
   const handleAddResult = (item: SearchResultItem) => {
-    addProductToCart(item);
-    // setSearchResults([]);
-    // setIsUserListVisible(false);
+    const newItem = {
+      id: item.id,
+      title: item.title,
+      address: item.address,
+      lat: item.lat,
+      lng: item.lng,
+    };
+    addToCart(newItem);
   };
   const handleSelectCartItem = (item: CartItem, isSelected: boolean) => {
     if (isSelected) {
