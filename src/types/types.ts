@@ -32,6 +32,8 @@ export interface CartItem {
   id: number;
   title: string;
   address: string;
+  lat: number;
+  lng: number;
 }
 
 export interface CartModalProps {

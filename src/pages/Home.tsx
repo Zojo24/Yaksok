@@ -5,7 +5,7 @@ import NaverMap from "../components/NaverMap";
 import { fetchPlaceInfo, savePlace, searchPlace } from "../utils/api";
 import MockProfiles from "../mocks/MockProfiles";
 import HamburgerMenu from "../components/HamburgerMenu";
-import { LatLng, SearchResultItem } from "../types/\btypes";
+import { CartItem, LatLng, SearchResultItem } from "../types/\btypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import Cart from "../components/Cart";
@@ -28,6 +28,7 @@ const Home = () => {
   const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
   const cartItems = useCartStore((state) => state.cartItems);
   const addProductToCart = useCartStore((state) => state.addToCart);
+  const [selectedCartItems, setSelectedCartItems] = useState<CartItem[]>([]);
 
   const handleSearch = async () => {
     if (!searchQuery) return; // 검색어가 비어있으면 요청을 보내지 않음
@@ -93,10 +94,30 @@ const Home = () => {
     setIsCartDropdownOpen(!isCartDropdownOpen);
   };
 
-  const handleAddClear = (item: SearchResultItem) => {
+  const handleAddResult = (item: SearchResultItem) => {
     addProductToCart(item);
     // setSearchResults([]);
     // setIsUserListVisible(false);
+  };
+  const handleSelectCartItem = (item: CartItem, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedCartItems((prevSelected) => [...prevSelected, item]);
+    } else {
+      setSelectedCartItems((prevSelected) =>
+        prevSelected.filter((cartItem) => cartItem.id !== item.id)
+      );
+    }
+  };
+
+  const addSelectedItemsToMap = () => {
+    const newLocations = selectedCartItems.map((item) => ({
+      lat: item.lat,
+      lng: item.lng,
+    }));
+    setSelectedLocations((prevLocations) => [
+      ...prevLocations,
+      ...newLocations,
+    ]);
   };
 
   return (
@@ -122,13 +143,17 @@ const Home = () => {
                 <FontAwesomeIcon icon={faShoppingCart} />
               </Button>
               {isCartDropdownOpen && (
-                <div className="absolute left-24 top-44 p-5 mt-2 ml-1 flex flex-col bg-white shadow-lg rounded-lg">
-                  <Cart cartItems={cartItems} />
+                <div className="absolute left-24 top-44 p-5 mt-2 ml-1 flex flex-col bg-white shadow-md rounded-lg shadow-darkGray">
+                  <Cart
+                    cartItems={cartItems}
+                    onSelectItem={handleSelectCartItem}
+                    onAddMap={addSelectedItemsToMap}
+                  />
                   <Button
                     variant="gray"
                     size="sm"
                     onClick={toggleCartDropdown}
-                    className="cursor-pointer"
+                    className="cursor-pointer "
                   >
                     닫기
                   </Button>
@@ -202,7 +227,7 @@ const Home = () => {
                       variant="white"
                       size="md"
                       className="text-[0.85rem] justify-center items-center text-bold"
-                      onClick={() => handleAddClear(result)}
+                      onClick={() => handleAddResult(result)}
                     >
                       장바구니에 추가
                     </Button>
