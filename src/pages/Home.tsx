@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logo from "../assets/logo-w.png";
 import Button from "../components/Button";
 import NaverMap from "../components/NaverMap";
@@ -11,22 +11,37 @@ import { faShoppingCart, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Cart from "../components/Cart";
 import { useCartStore } from "../store/cartStore";
 import { useSearchStore } from "../store/searchStore";
+import { MockSearch } from "../mocks/MockSearch";
 
 //임시로 시청역을 기준으로 잡음 (추후 변경 예정)
 const Home = () => {
-  const { cartItems, addToCart } = useCartStore();
+  const { cartItems, addToCart, addLocation } = useCartStore();
   const defaultCenter: LatLng = { lat: 37.5663, lng: 126.9779 };
 
   const [searchQuery, setSearchQuery] = useState("");
   const [mapCenter, setMapCenter] = useState<LatLng>(defaultCenter);
   const [isUserListVisible, setIsUserListVisible] = useState(false);
-  const [selectedLocations, setSelectedLocations] = useState<LatLng[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState(
+    MockSearch.map((item) => ({
+      lat: item.lat,
+      lng: item.lng,
+    }))
+  );
+  //목업
+  // const [searchResults, setSearchResults] = useState(MockSearch);
   const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
   const [selectedCartItems, setSelectedCartItems] = useState<CartItem[]>([]);
   const { searchResults, setSearchResults } = useSearchStore((state) => ({
     searchResults: state.searchResults,
     setSearchResults: state.setSearchResults,
   }));
+
+  //목업 데이터용
+  // useEffect(() => {
+  //   setSelectedLocations(
+  //     MockSearch.map((item) => ({ lat: item.lat, lng: item.lng }))
+  //   );
+  // }, []);
 
   const handleSearch = async () => {
     if (!searchQuery) return;
@@ -35,8 +50,8 @@ const Home = () => {
       const convertedResults = results.map(
         (result: { mapy: number; mapx: number }) => ({
           ...result,
-          lat: result.mapy,
-          lng: result.mapx,
+          lat: result.mapy / 10000000,
+          lng: result.mapx / 10000000,
         })
       );
 
@@ -62,7 +77,6 @@ const Home = () => {
         result.lat,
         result.lng
       );
-      console.log("장소 저장 성공");
 
       // 장소 저장 성공 후, 추가 정보를 불러오기 (실제 구조에 맞춰 조정 필요)
       const placeInfo = {
@@ -93,33 +107,43 @@ const Home = () => {
 
   const handleAddResult = (item: SearchResultItem) => {
     const newItem = {
-      id: item.id,
+      id: item.index,
       title: item.title,
       address: item.address,
       lat: item.lat,
       lng: item.lng,
     };
     addToCart(newItem);
+    console.log(newItem);
+    addLocation({ lat: item.lat, lng: item.lng });
+    addSelectedItemsToMap();
   };
   const handleSelectCartItem = (item: CartItem, isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedCartItems((prevSelected) => [...prevSelected, item]);
-    } else {
-      setSelectedCartItems((prevSelected) =>
-        prevSelected.filter((cartItem) => cartItem.id !== item.id)
+    setSelectedCartItems((prevSelected) => {
+      const itemIndex = prevSelected.findIndex(
+        (cartItem) => cartItem.id === item.id
       );
-    }
+      if (isSelected && itemIndex === -1) {
+        return [...prevSelected, item];
+      } else if (!isSelected && itemIndex !== -1) {
+        return prevSelected.filter((_, index) => index !== itemIndex);
+      }
+      return prevSelected;
+    });
   };
 
   const addSelectedItemsToMap = () => {
-    const newLocations = selectedCartItems.map((item) => ({
-      lat: item.lat,
-      lng: item.lng,
-    }));
-    setSelectedLocations((prevLocations) => [
-      ...prevLocations,
-      ...newLocations,
-    ]);
+    const newLocations = selectedCartItems.reduce((acc, item) => {
+      const exists = acc.some(
+        (loc) => loc.lat === item.lat && loc.lng === item.lng
+      );
+      if (!exists) {
+        acc.push({ lat: item.lat, lng: item.lng });
+      }
+      return acc;
+    }, []);
+
+    setSelectedLocations(newLocations);
   };
 
   return (
@@ -208,7 +232,7 @@ const Home = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-
+            {/* 검색결과 */}
             <div className="bg-white rounded-[5px]">
               <ul>
                 {searchResults.map((result, index) => (

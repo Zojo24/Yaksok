@@ -13,9 +13,9 @@ const Cart = ({ cartItems, onAddMap, onSelectItem, children }: CartProps) => {
     <div className="relative bg-white rounded-[5px]">
       <div className="absolute -left-10 top-[10%] transform -translate-y-1/2 rotate-90 w-0 h-0 border-x-[10px] border-x-darkGray border-x-transparent border-t-[20px] border-t-white"></div>
       <ul>
-        {cartItems.map((item) => (
+        {cartItems.map((item, index) => (
           <li
-            key={item.id}
+            key={index}
             className="bg-creme px-4 py-3 my-3 rounded-[5px] flex justify-between items-center"
           >
             <div>

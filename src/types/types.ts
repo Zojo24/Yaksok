@@ -29,6 +29,7 @@ export interface PlaceInfo {
 }
 
 export interface CartItem {
+  index?: string;
   id: string;
   title: string;
   address: string;

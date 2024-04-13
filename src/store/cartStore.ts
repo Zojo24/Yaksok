@@ -11,6 +11,9 @@ let cartStore = (set): CartState => ({
       cartItems: state.cartItems.filter((item) => item.id !== id),
     })),
   clearCart: () => set({ cartItems: [] }),
+  locations: [],
+  addLocation: (location) =>
+    set((state) => ({ locations: [...state.locations, location] })),
 });
 
 cartStore = devtools(cartStore);
