@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Cart from "../components/Cart";
 import { useCartStore } from "../store/cartStore";
+import { useSearchStore } from "../store/searchStore";
 
 //임시로 시청역을 기준으로 잡음 (추후 변경 예정)
 const Home = () => {
@@ -17,30 +18,32 @@ const Home = () => {
   const defaultCenter: LatLng = { lat: 37.5663, lng: 126.9779 };
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [mapCenter, setMapCenter] = useState<LatLng>(defaultCenter);
   const [isUserListVisible, setIsUserListVisible] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState<LatLng[]>([]);
   const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
   const [selectedCartItems, setSelectedCartItems] = useState<CartItem[]>([]);
+  const { searchResults, setSearchResults } = useSearchStore((state) => ({
+    searchResults: state.searchResults,
+    setSearchResults: state.setSearchResults,
+  }));
 
   const handleSearch = async () => {
-    if (!searchQuery) return; // 검색어가 비어있으면 요청을 보내지 않음
+    if (!searchQuery) return;
     try {
       const results = await searchPlace(searchQuery);
-      console.log(results);
       const convertedResults = results.map(
         (result: { mapy: number; mapx: number }) => ({
           ...result,
-          lat: result.mapy, // 'mapy' 값을 'lat'로 변환
-          lng: result.mapx, // 'mapx' 값을 'lng'로 변환
+          lat: result.mapy,
+          lng: result.mapx,
         })
       );
 
       setSearchResults(convertedResults);
     } catch (error) {
       console.error("검색 실패:", error);
-      setSearchResults([]); // 에러 발생 시 검색 결과를 비움
+      setSearchResults([]);
     }
   };
 
